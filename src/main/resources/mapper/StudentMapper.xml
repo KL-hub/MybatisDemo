@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.StudentMapper">
+<!-- 定义基础字段-->
+  <resultMap id="BaseResultMap" type="com.example.entity.Student">
+    <!--@mbg.generated-->
+    <!--@Table student-->
+    <result column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="age" property="age" />
+    <result column="sex" property="sex" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `name`, age, sex
+  </sql>
+  <sql id="Base_Value_Column_List">
+    #{id}, #{name}, #{age}, #{sex}
+  </sql>
+  <sql id="Base_Column_List_Selctive">
+    <if test="id != null">
+      id,
+    </if>
+    <if test="name != null">
+      `name`,
+    </if>
+    <if test="age != null">
+      age,
+    </if>
+    <if test="sex != null">
+      sex,
+    </if>
+  </sql>
+  <sql id="Base_Column_Value_List_Selctive">
+    <if test="id != null">
+      #{id},
+    </if>
+    <if test="name != null">
+      #{name},
+    </if>
+    <if test="age != null">
+      #{age},
+    </if>
+    <if test="sex != null">
+      #{sex},
+    </if>
+  </sql>
+
+<!--定义基础字段结束-->
+  <insert id="insert" parameterType="com.example.entity.Student">
+    <!--@mbg.generated-->
+    insert into student (<include refid="Base_Column_List"/>)
+    values (<include refid="Base_Value_Column_List"/>)
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.example.entity.Student">
+    <!--@mbg.generated-->
+    insert into student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <include refid="Base_Column_List_Selctive"/>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <include refid="Base_Column_Value_List_Selctive"/>
+    </trim>
+  </insert>
+
+  <insert id="batchInsert" parameterType="map">
+    <!--@mbg.generated-->
+    insert into student
+    (id, `name`, age, sex)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id}, #{item.name}, #{item.age}, #{item.sex})
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" parameterType="com.example.entity.Student">
+    <!--@mbg.generated-->
+    insert into student
+    (id, `name`, age, sex)
+    values
+    (#{id}, #{name}, #{age}, #{sex})
+    on duplicate key update 
+    id = #{id}, 
+    `name` = #{name}, 
+    age = #{age}, 
+    sex = #{sex}
+  </insert>
+  <insert id="insertOrUpdateSelective" parameterType="com.example.entity.Student">
+    <!--@mbg.generated-->
+    insert into student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <include refid="Base_Column_List_Selctive"/>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <include refid="Base_Column_Value_List_Selctive"/>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <include refid="Base_Column_Value_List_Selctive"/>
+    </trim>
+  </insert>
+
+  <!--批量查询selective-->
+  <select id="batchQuerySelective" parameterType="java.util.List" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from student
+    <where>
+      <foreach collection="list" item="item" index="index" open="" separator=" or " close="">
+        <trim prefix="(" suffix=")" prefixOverrides="AND|OR" suffixOverrides="">
+          <if test="item.id != null ">
+            and id = #{item.id,jdbcType=BIGINT}
+          </if>
+          <if test="item.name != null and item.name != ''">
+            and name = #{item.name,jdbcType=VARCHAR}
+          </if>
+          <if test="item.sex != null ">
+            and sex = #{item.sex,jdbcType=DATE}
+          </if>
+          <if test="item.age != null and item.age != ''">
+            and age = #{item.age,jdbcType=VARCHAR}
+          </if>
+        </trim>
+      </foreach>
+    </where>
+  </select>
+
+
+  <!--批量更新,后续有新的需要, 可自行添加where条件和set字段-->
+<!-- 尽可能通过主键更新   如果 通过其他字段更新  ，业务层需加校验，且更新条件不能同时出现-->
+  <update id="batchUpdateList" parameterType="java.util.List">
+    <foreach collection="list" item="item" open="" close="" separator=";">
+      update student
+      <set>
+        <trim prefix="" suffix="" suffixOverrides=",">
+          <if test="item.name != null and item.name != ''">
+            `name` = #{item.name,jdbcType=VARCHAR},
+          </if>
+          <if test="item.age != null">
+            age = #{item.age,jdbcType=DATE},
+          </if>
+          <if test="item.sex != null">
+            sex = #{item.sex,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </set>
+      <where>
+        <if test="item.id != null and item.id != 0">
+          and id = #{item.id,jdbcType=BIGINT}
+        </if>
+<!--        <if test="item.name != null and item.name != ''">-->
+<!--          and `name` = #{item.name,jdbcType=VARCHAR}-->
+<!--        </if>-->
+<!--        <if test="item.age != null and item.age != ''">-->
+<!--          and age = #{item.age,jdbcType=DATE}-->
+<!--        </if>-->
+<!--        <if test="item.sex != null and item.sex != ''">-->
+<!--          and sex = #{item.sex,jdbcType=VARCHAR}-->
+<!--        </if>-->
+      </where>
+    </foreach>
+  </update>
+
+
+<!--case when 批量更新-->
+  <update id="updateBatchCaseWhen" parameterType="java.util.List" >
+    update student
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="name =case" suffix="end,">
+        <foreach collection="list" item="i" index="index">
+          <if test="i.name!=null">
+            when id=#{i.id} then #{i.name}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="age =case" suffix="end,">
+        <foreach collection="list" item="i" index="index">
+          <if test="i.age!=null">
+            when id=#{i.id} then #{i.age}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="sex =case" suffix="end,">
+        <foreach collection="list" item="i" index="index">
+          <if test="i.sex!=null">
+            when id=#{i.id} then #{i.sex}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where
+    <foreach collection="list" separator="or" item="i" index="index" >
+      id=#{i.id}
+    </foreach>
+  </update>
+
+
+</mapper>
