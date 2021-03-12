@@ -51,7 +51,18 @@ public interface StudentMapper {
      **/
     int updateBatchCaseWhen(@Param("list") List<Student> list);
 
+    /**
+     * @author  lixiang
+     * @create  2021/3/6 17:31
+     * @desc 通过ID进行批量更新 或者唯一主键
+     **/
+    int batchDelByIds(@Param("list") List<Student> list);
 
-
+     /**
+      * @author  lixiang
+      * @create  2021/3/12 17:58
+      * @desc
+      **/
+     List<Student> listSelective(Student student);
 
 }

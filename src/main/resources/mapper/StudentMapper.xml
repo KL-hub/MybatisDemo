@@ -196,5 +196,20 @@
     </foreach>
   </update>
 
+<!--  批量删除-->
+<delete id="batchDelByIds" parameterType="java.util.List">
+ delete from student
+  where id in
+   <foreach item="id" collection="list" open="(" separator="," close=")">
+   #{id,jdbcType=BIGINT}
+  </foreach>
+</delete>
 
+  <!--查询集合-->
+  <select id="listSelective" parameterType="com.example.entity.Student" resultType="com.example.entity.Student">
+    select
+    <include refid="Base_Column_List"/>
+    from student
+    <include refid="Base_Column_Value_List_Selctive"/>
+  </select>
 </mapper>
